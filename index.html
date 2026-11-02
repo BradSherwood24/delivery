@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Wyatts Pizzeria – Order Status</title>
-<meta name="theme-color" content="#b8321f">
+<meta name="theme-color" content="#ffffff">
 <script>
   // ============================================================
   //  EDIT THESE TO UPDATE THE PAGE
@@ -13,7 +13,7 @@
   //                 2 = In the oven
   //                 3 = Out for delivery
   //                 4 = Delivered
-  const CURRENT_STEP = 1;
+  const CURRENT_STEP = 2;
 
   //  GIF_URL: path or link to the pizza-toss GIF.
   //  e.g. "pizza.gif" (file in this repo) or a full https:// link.
@@ -23,170 +23,171 @@
 </script>
 <style>
   :root {
-    --red: #b8321f;
-    --red-dark: #8f2414;
-    --cream: #fff8ee;
+    --bg: #f4f4f2;
     --card: #ffffff;
-    --ink: #2b1d14;
-    --muted: #7a6a5e;
-    --track: #eadfd2;
-    --green: #2f8f46;
+    --ink: #1c1c1c;
+    --muted: #6b6b6b;
+    --line: #e3e3e0;
+    --accent: #9e2a1f;   /* muted brick red, used sparingly */
+    --done: #2e6b47;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
   body {
-    background: var(--cream);
+    background: var(--bg);
     color: var(--ink);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    line-height: 1.4;
+    line-height: 1.45;
     -webkit-font-smoothing: antialiased;
   }
   header {
-    background: var(--red);
-    color: #fff;
-    text-align: center;
-    padding: calc(18px + env(safe-area-inset-top)) 16px 18px;
-    background-image: repeating-linear-gradient(45deg, rgba(255,255,255,.06) 0 14px, transparent 14px 28px);
+    background: var(--card);
+    border-bottom: 1px solid var(--line);
+    padding: calc(14px + env(safe-area-inset-top)) 16px 14px;
+  }
+  .header-inner {
+    max-width: 480px;
+    margin: 0 auto;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
   }
   header h1 {
     margin: 0;
     font-family: Georgia, "Times New Roman", serif;
-    font-size: 1.75rem;
-    letter-spacing: .5px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: .2px;
   }
-  header p { margin: 4px 0 0; opacity: .85; font-size: .9rem; }
+  header span { color: var(--muted); font-size: .85rem; }
 
   main {
     max-width: 480px;
     margin: 0 auto;
-    padding: 16px 16px calc(24px + env(safe-area-inset-bottom));
+    padding: 16px 16px calc(28px + env(safe-area-inset-bottom));
   }
   .card {
     background: var(--card);
-    border-radius: 16px;
-    box-shadow: 0 2px 10px rgba(60, 30, 10, .08);
+    border: 1px solid var(--line);
+    border-radius: 12px;
     padding: 20px 18px;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
 
   .status-label {
-    font-size: .8rem;
+    font-size: .75rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: .08em;
     color: var(--muted);
     margin: 0;
   }
   .status-now {
-    font-size: 1.6rem;
-    font-weight: 700;
-    margin: 2px 0 16px;
-    color: var(--red);
+    font-size: 1.45rem;
+    font-weight: 600;
+    margin: 4px 0 18px;
   }
-  .status-now.done { color: var(--green); }
 
   .bar {
-    height: 12px;
-    background: var(--track);
+    height: 6px;
+    background: var(--line);
     border-radius: 999px;
     overflow: hidden;
   }
   .bar-fill {
     height: 100%;
     width: 0;
-    background: linear-gradient(90deg, var(--red), #e2632c);
+    background: var(--accent);
     border-radius: 999px;
-    transition: width 1.2s ease;
+    transition: width 1s ease;
   }
-  .bar-fill.done { background: var(--green); }
+  .bar-fill.done { background: var(--done); }
 
   ol.steps {
     list-style: none;
-    margin: 20px 0 0;
+    margin: 22px 0 0;
     padding: 0;
   }
   ol.steps li {
     display: flex;
     align-items: center;
     gap: 14px;
-    padding: 10px 0;
+    padding: 9px 0;
     position: relative;
     color: var(--muted);
   }
   ol.steps li:not(:last-child)::after {
     content: "";
     position: absolute;
-    left: 17px;
-    top: 48px;
+    left: 10px;
+    top: 34px;
     width: 2px;
-    height: calc(100% - 38px);
-    background: var(--track);
+    height: calc(100% - 22px);
+    background: var(--line);
   }
-  ol.steps li.complete:not(:last-child)::after { background: var(--red); }
+  ol.steps li.complete:not(:last-child)::after { background: var(--ink); }
   .dot {
-    flex: 0 0 36px;
-    height: 36px;
+    flex: 0 0 22px;
+    height: 22px;
     border-radius: 50%;
-    border: 2px solid var(--track);
-    background: #fff;
+    border: 2px solid var(--line);
+    background: var(--card);
     display: grid;
     place-items: center;
-    font-size: 1.1rem;
   }
-  .step-name { font-size: 1.05rem; }
-  li.complete .dot { background: var(--red); border-color: var(--red); color: #fff; }
+  .dot svg { width: 12px; height: 12px; }
+  .step-name { font-size: 1rem; }
+  li.complete .dot { background: var(--ink); border-color: var(--ink); color: #fff; }
   li.complete .step-name { color: var(--ink); }
-  li.current .dot {
-    border-color: var(--red);
-    animation: pulse 1.6s ease-out infinite;
+  li.current .dot { border-color: var(--accent); }
+  li.current .dot::before {
+    content: "";
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 1.8s ease-in-out infinite;
   }
-  li.current .step-name { color: var(--ink); font-weight: 700; }
-  li.current.final .dot { background: var(--green); border-color: var(--green); color: #fff; animation: none; }
+  li.current .step-name { color: var(--ink); font-weight: 600; }
+  li.current.final .dot { background: var(--done); border-color: var(--done); color: #fff; }
+  li.current.final .dot::before { display: none; }
   @keyframes pulse {
-    0%   { box-shadow: 0 0 0 0 rgba(184, 50, 31, .45); }
-    100% { box-shadow: 0 0 0 12px rgba(184, 50, 31, 0); }
+    0%, 100% { opacity: 1; }
+    50%      { opacity: .35; }
   }
 
-  .gif-wrap {
-    padding: 0;
-    overflow: hidden;
-  }
-  .gif-wrap img {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
+  .gif-wrap { padding: 0; overflow: hidden; }
+  .gif-wrap img { display: block; width: 100%; height: auto; }
   .gif-placeholder {
     aspect-ratio: 4 / 3;
     display: grid;
     place-items: center;
     text-align: center;
     color: var(--muted);
-    border: 2px dashed var(--track);
-    border-radius: 16px;
-    margin: 12px;
+    background: #fafaf8;
     font-size: .9rem;
     padding: 12px;
   }
-  .gif-placeholder span { font-size: 2.5rem; display: block; margin-bottom: 6px; }
 
   .contact {
     text-align: center;
     color: var(--muted);
-    font-size: .95rem;
-    padding: 4px 8px 0;
+    font-size: .9rem;
+    padding: 6px 8px 0;
   }
-  .contact strong { color: var(--ink); }
+  .contact strong { color: var(--ink); font-weight: 600; }
 
   @media (prefers-reduced-motion: reduce) {
     .bar-fill { transition: none; }
-    li.current .dot { animation: none; }
+    li.current .dot::before { animation: none; }
   }
 </style>
 </head>
 <body>
 <header>
-  <h1>🍕 Wyatts Pizzeria</h1>
-  <p>Order tracker</p>
+  <div class="header-inner">
+    <h1>Wyatts Pizzeria</h1>
+    <span>Order status</span>
+  </div>
 </header>
 
 <main>
@@ -207,20 +208,13 @@
 </main>
 
 <script>
-  const STEPS = [
-    { name: "Order received",   icon: "🧾" },
-    { name: "In the oven",      icon: "🔥" },
-    { name: "Out for delivery", icon: "🚗" },
-    { name: "Delivered",        icon: "🏠" },
-  ];
+  const STEPS = ["Order received", "In the oven", "Out for delivery", "Delivered"];
+  const CHECK = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5l2.2 2.2L9.5 3.8"/></svg>';
 
   const step = Math.min(Math.max(parseInt(CURRENT_STEP, 10) || 1, 1), STEPS.length);
   const isDone = step === STEPS.length;
 
-  // Status headline
-  const now = document.getElementById("statusNow");
-  now.textContent = STEPS[step - 1].name + (isDone ? " — enjoy!" : "");
-  now.classList.toggle("done", isDone);
+  document.getElementById("statusNow").textContent = STEPS[step - 1];
 
   // Progress bar (step 1 shows a sliver, last step is 100%)
   const pct = ((step - 1) / (STEPS.length - 1)) * 100;
@@ -228,18 +222,18 @@
   fill.classList.toggle("done", isDone);
   document.getElementById("bar").setAttribute("aria-valuenow", step);
   requestAnimationFrame(() => requestAnimationFrame(() => {
-    fill.style.width = Math.max(pct, 6) + "%";
+    fill.style.width = Math.max(pct, 5) + "%";
   }));
 
   // Step list
   const list = document.getElementById("steps");
-  STEPS.forEach((s, i) => {
+  STEPS.forEach((name, i) => {
     const n = i + 1;
     const li = document.createElement("li");
     if (n < step) li.className = "complete";
     else if (n === step) li.className = "current" + (isDone ? " final" : "");
-    const icon = n < step || (isDone && n === step) ? "✓" : s.icon;
-    li.innerHTML = `<span class="dot">${icon}</span><span class="step-name">${s.name}</span>`;
+    const mark = n < step || (isDone && n === step) ? CHECK : "";
+    li.innerHTML = `<span class="dot">${mark}</span><span class="step-name">${name}</span>`;
     list.appendChild(li);
   });
 
@@ -251,7 +245,7 @@
     img.alt = "Pizza chef tossing dough in the air";
     gifCard.appendChild(img);
   } else {
-    gifCard.innerHTML = `<div class="gif-placeholder"><div><span>👨‍🍳</span>Pizza-toss GIF goes here<br><small>Set GIF_URL at the top of index.html</small></div></div>`;
+    gifCard.innerHTML = '<div class="gif-placeholder">Image coming soon</div>';
   }
 </script>
 </body>
