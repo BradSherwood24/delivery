@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wyatts Pizzeria – Order Status</title>
+<meta name="theme-color" content="#b8321f">
+<script>
+  // ============================================================
+  //  EDIT THESE TO UPDATE THE PAGE
+  // ============================================================
+  //  CURRENT_STEP:  1 = Order received
+  //                 2 = In the oven
+  //                 3 = Out for delivery
+  //                 4 = Delivered
+  const CURRENT_STEP = 1;
+
+  //  GIF_URL: path or link to the pizza-toss GIF.
+  //  e.g. "pizza.gif" (file in this repo) or a full https:// link.
+  //  Leave as "" to show the placeholder box.
+  const GIF_URL = "";
+  // ============================================================
+</script>
+<style>
+  :root {
+    --red: #b8321f;
+    --red-dark: #8f2414;
+    --cream: #fff8ee;
+    --card: #ffffff;
+    --ink: #2b1d14;
+    --muted: #7a6a5e;
+    --track: #eadfd2;
+    --green: #2f8f46;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+  }
+  header {
+    background: var(--red);
+    color: #fff;
+    text-align: center;
+    padding: calc(18px + env(safe-area-inset-top)) 16px 18px;
+    background-image: repeating-linear-gradient(45deg, rgba(255,255,255,.06) 0 14px, transparent 14px 28px);
+  }
+  header h1 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.75rem;
+    letter-spacing: .5px;
+  }
+  header p { margin: 4px 0 0; opacity: .85; font-size: .9rem; }
+
+  main {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 16px 16px calc(24px + env(safe-area-inset-bottom));
+  }
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(60, 30, 10, .08);
+    padding: 20px 18px;
+    margin-bottom: 16px;
+  }
+
+  .status-label {
+    font-size: .8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin: 0;
+  }
+  .status-now {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 2px 0 16px;
+    color: var(--red);
+  }
+  .status-now.done { color: var(--green); }
+
+  .bar {
+    height: 12px;
+    background: var(--track);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, var(--red), #e2632c);
+    border-radius: 999px;
+    transition: width 1.2s ease;
+  }
+  .bar-fill.done { background: var(--green); }
+
+  ol.steps {
+    list-style: none;
+    margin: 20px 0 0;
+    padding: 0;
+  }
+  ol.steps li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 0;
+    position: relative;
+    color: var(--muted);
+  }
+  ol.steps li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 17px;
+    top: 48px;
+    width: 2px;
+    height: calc(100% - 38px);
+    background: var(--track);
+  }
+  ol.steps li.complete:not(:last-child)::after { background: var(--red); }
+  .dot {
+    flex: 0 0 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid var(--track);
+    background: #fff;
+    display: grid;
+    place-items: center;
+    font-size: 1.1rem;
+  }
+  .step-name { font-size: 1.05rem; }
+  li.complete .dot { background: var(--red); border-color: var(--red); color: #fff; }
+  li.complete .step-name { color: var(--ink); }
+  li.current .dot {
+    border-color: var(--red);
+    animation: pulse 1.6s ease-out infinite;
+  }
+  li.current .step-name { color: var(--ink); font-weight: 700; }
+  li.current.final .dot { background: var(--green); border-color: var(--green); color: #fff; animation: none; }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(184, 50, 31, .45); }
+    100% { box-shadow: 0 0 0 12px rgba(184, 50, 31, 0); }
+  }
+
+  .gif-wrap {
+    padding: 0;
+    overflow: hidden;
+  }
+  .gif-wrap img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .gif-placeholder {
+    aspect-ratio: 4 / 3;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    color: var(--muted);
+    border: 2px dashed var(--track);
+    border-radius: 16px;
+    margin: 12px;
+    font-size: .9rem;
+    padding: 12px;
+  }
+  .gif-placeholder span { font-size: 2.5rem; display: block; margin-bottom: 6px; }
+
+  .contact {
+    text-align: center;
+    color: var(--muted);
+    font-size: .95rem;
+    padding: 4px 8px 0;
+  }
+  .contact strong { color: var(--ink); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bar-fill { transition: none; }
+    li.current .dot { animation: none; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>🍕 Wyatts Pizzeria</h1>
+  <p>Order tracker</p>
+</header>
+
+<main>
+  <section class="card" aria-live="polite">
+    <p class="status-label">Current status</p>
+    <p class="status-now" id="statusNow"></p>
+    <div class="bar" role="progressbar" aria-valuemin="1" aria-valuemax="4" id="bar">
+      <div class="bar-fill" id="barFill"></div>
+    </div>
+    <ol class="steps" id="steps"></ol>
+  </section>
+
+  <section class="card gif-wrap" id="gifCard"></section>
+
+  <p class="contact">
+    If you have any questions, <strong>feel free to not contact us.</strong>
+  </p>
+</main>
+
+<script>
+  const STEPS = [
+    { name: "Order received",   icon: "🧾" },
+    { name: "In the oven",      icon: "🔥" },
+    { name: "Out for delivery", icon: "🚗" },
+    { name: "Delivered",        icon: "🏠" },
+  ];
+
+  const step = Math.min(Math.max(parseInt(CURRENT_STEP, 10) || 1, 1), STEPS.length);
+  const isDone = step === STEPS.length;
+
+  // Status headline
+  const now = document.getElementById("statusNow");
+  now.textContent = STEPS[step - 1].name + (isDone ? " — enjoy!" : "");
+  now.classList.toggle("done", isDone);
+
+  // Progress bar (step 1 shows a sliver, last step is 100%)
+  const pct = ((step - 1) / (STEPS.length - 1)) * 100;
+  const fill = document.getElementById("barFill");
+  fill.classList.toggle("done", isDone);
+  document.getElementById("bar").setAttribute("aria-valuenow", step);
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    fill.style.width = Math.max(pct, 6) + "%";
+  }));
+
+  // Step list
+  const list = document.getElementById("steps");
+  STEPS.forEach((s, i) => {
+    const n = i + 1;
+    const li = document.createElement("li");
+    if (n < step) li.className = "complete";
+    else if (n === step) li.className = "current" + (isDone ? " final" : "");
+    const icon = n < step || (isDone && n === step) ? "✓" : s.icon;
+    li.innerHTML = `<span class="dot">${icon}</span><span class="step-name">${s.name}</span>`;
+    list.appendChild(li);
+  });
+
+  // GIF slot
+  const gifCard = document.getElementById("gifCard");
+  if (GIF_URL) {
+    const img = document.createElement("img");
+    img.src = GIF_URL;
+    img.alt = "Pizza chef tossing dough in the air";
+    gifCard.appendChild(img);
+  } else {
+    gifCard.innerHTML = `<div class="gif-placeholder"><div><span>👨‍🍳</span>Pizza-toss GIF goes here<br><small>Set GIF_URL at the top of index.html</small></div></div>`;
+  }
+</script>
+</body>
+</html>
