@@ -28,7 +28,9 @@
     --ink: #1c1c1c;
     --muted: #6b6b6b;
     --line: #e3e3e0;
-    --accent: #9e2a1f;   /* muted brick red, used sparingly */
+    --accent: #6fa8d6;   /* baby blue */
+    --accent-soft: #e6f1fa;
+    --accent-ink: #2f6690;
     --done: #2e6b47;
   }
   * { box-sizing: border-box; }
@@ -45,22 +47,40 @@
     border-bottom: 1px solid var(--line);
     padding: calc(14px + env(safe-area-inset-top)) 16px 14px;
   }
+  header { border-bottom: 3px solid var(--accent); }
   .header-inner {
     max-width: 480px;
     margin: 0 auto;
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     gap: 12px;
   }
-  header h1 {
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     margin: 0;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 1.3rem;
-    font-weight: 600;
-    letter-spacing: .2px;
+    text-decoration: none;
+    color: var(--ink);
   }
-  header span { color: var(--muted); font-size: .85rem; }
+  .logo-mark { width: 42px; height: 42px; flex: 0 0 42px; }
+  .logo-text { display: flex; flex-direction: column; line-height: 1; }
+  .logo-name {
+    font-family: Georgia, "Times New Roman", serif;
+    font-style: italic;
+    font-size: 1.45rem;
+    font-weight: 600;
+  }
+  .logo-sub {
+    font-size: .62rem;
+    letter-spacing: .32em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    margin-top: 4px;
+    font-weight: 600;
+  }
+  header .tag { color: var(--muted); font-size: .8rem; }
 
   main {
     max-width: 480px;
@@ -168,13 +188,27 @@
     padding: 12px;
   }
 
-  .contact {
-    text-align: center;
-    color: var(--muted);
-    font-size: .9rem;
-    padding: 6px 8px 0;
+  .contact { text-align: center; }
+  .contact h2 {
+    margin: 0 0 12px;
+    font-size: 1.05rem;
+    font-weight: 700;
   }
-  .contact strong { color: var(--ink); font-weight: 600; }
+  .contact button {
+    appearance: none;
+    width: 100%;
+    max-width: 320px;
+    min-height: 48px;
+    padding: 12px 18px;
+    border: 1.5px solid var(--accent);
+    border-radius: 10px;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .contact button:active { background: #d4e7f6; }
 
   @media (prefers-reduced-motion: reduce) {
     .bar-fill { transition: none; }
@@ -185,8 +219,21 @@
 <body>
 <header>
   <div class="header-inner">
-    <h1>Wyatts Pizzeria</h1>
-    <span>Order status</span>
+    <h1 class="logo" aria-label="Wyatts Pizzeria">
+      <svg class="logo-mark" viewBox="0 0 42 42" aria-hidden="true">
+        <circle cx="21" cy="21" r="20" fill="#e6f1fa" stroke="#6fa8d6" stroke-width="2"/>
+        <path d="M21 9 L32 30 Q21 35 10 30 Z" fill="#f3d9a4" stroke="#1c1c1c" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M10 30 Q21 35 32 30" fill="none" stroke="#c98a3e" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="20" cy="19" r="2" fill="#9e2a1f"/>
+        <circle cx="24" cy="25" r="2" fill="#9e2a1f"/>
+        <circle cx="17" cy="26" r="1.8" fill="#9e2a1f"/>
+      </svg>
+      <span class="logo-text">
+        <span class="logo-name">Wyatts</span>
+        <span class="logo-sub">Pizzeria</span>
+      </span>
+    </h1>
+    <span class="tag">Order status</span>
   </div>
 </header>
 
@@ -202,9 +249,10 @@
 
   <section class="card gif-wrap" id="gifCard"></section>
 
-  <p class="contact">
-    If you have any questions, <strong>feel free to not contact us.</strong>
-  </p>
+  <section class="card contact">
+    <h2>Have questions?</h2>
+    <button type="button">Please feel free to not contact us</button>
+  </section>
 </main>
 
 <script>
