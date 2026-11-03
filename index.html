@@ -19,6 +19,13 @@
   //  e.g. "pizza.gif" (file in this repo) or a full https:// link.
   //  Leave as "" to show the placeholder box.
   const GIF_URL = "pizza.gif";
+
+  //  NOTES: "Notes from the kitchen". Add a line per note.
+  //  time format: "YYYY-MM-DD h:mm AM/PM". Order doesn't matter,
+  //  newest always shows first. Empty list = section hidden.
+  const NOTES = [
+    { time: "2026-11-02 10:59 PM", text: "The kitchen has good lemon shaved ice" },
+  ];
   // ============================================================
 </script>
 <style>
@@ -210,6 +217,29 @@
   }
   .contact button:active { background: #d4e7f6; }
 
+  .notes h2 {
+    margin: 0 0 4px;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+  .notes ul { list-style: none; margin: 0; padding: 0; }
+  .notes li {
+    padding: 12px 0 12px 14px;
+    border-left: 3px solid var(--accent);
+    margin-top: 10px;
+    background: linear-gradient(90deg, var(--accent-soft), transparent 70%);
+    border-radius: 0 8px 8px 0;
+  }
+  .notes time {
+    display: block;
+    font-size: .75rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: 2px;
+  }
+  .notes p { margin: 0; padding-right: 10px; }
+
   @media (prefers-reduced-motion: reduce) {
     .bar-fill { transition: none; }
     li.current .dot::before { animation: none; }
@@ -253,6 +283,11 @@
     <h2>Have questions?</h2>
     <button type="button">Please feel free to not contact us</button>
   </section>
+
+  <section class="card notes" id="notesCard" hidden>
+    <h2>Notes from the kitchen</h2>
+    <ul id="notesList"></ul>
+  </section>
 </main>
 
 <script>
@@ -294,6 +329,37 @@
     gifCard.appendChild(img);
   } else {
     gifCard.innerHTML = '<div class="gif-placeholder">Image coming soon</div>';
+  }
+
+  // Notes from the kitchen (newest first)
+  function parseNoteTime(s) {
+    const m = String(s).trim().match(/^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{2})\s*([AaPp][Mm])?$/);
+    if (!m) return null;
+    let h = +m[4];
+    if (m[6]) { const pm = /p/i.test(m[6]); if (h === 12) h = 0; if (pm) h += 12; }
+    return new Date(+m[1], +m[2] - 1, +m[3], h, +m[5]);
+  }
+  function formatNoteTime(d) {
+    const t = d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    const today = new Date();
+    if (d.toDateString() === today.toDateString()) return "Today, " + t;
+    return d.toLocaleDateString([], { month: "short", day: "numeric" }) + ", " + t;
+  }
+  const notes = (typeof NOTES !== "undefined" ? NOTES : [])
+    .map(n => ({ ...n, date: parseNoteTime(n.time) }))
+    .sort((a, b) => (b.date || 0) - (a.date || 0));
+  if (notes.length) {
+    const ul = document.getElementById("notesList");
+    notes.forEach(n => {
+      const li = document.createElement("li");
+      const time = document.createElement("time");
+      time.textContent = n.date ? formatNoteTime(n.date) : n.time;
+      const p = document.createElement("p");
+      p.textContent = n.text;
+      li.append(time, p);
+      ul.appendChild(li);
+    });
+    document.getElementById("notesCard").hidden = false;
   }
 </script>
 </body>
